@@ -15,9 +15,6 @@ class ProductController extends BaseController {
       const products = await ProductServices.getProducts(offset, plimit); 
       return res.send(products);
     } catch (error) {
-      if(error instanceof NotFoundException) {
-          console.log('aljsfldja;fk;akf;')
-      }
       ProductController.errorHandler(res, error);
     }
   }
