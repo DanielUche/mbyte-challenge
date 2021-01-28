@@ -5,11 +5,7 @@ import { NotFoundException } from '../utils/exceptions';
 class ProductServices {
 
   static async getProducts(offset: number, limit: number) {
-    const products = await Products.paginate({}, { offset, limit });
-    if (!products.totalDocs) {
-      throw new NotFoundException('Products not found');
-    }
-    return products;
+    return await Products.paginate({}, { offset, limit });
   }
 
   static async getProduct(id: number): Promise<IProduct> {

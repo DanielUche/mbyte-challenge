@@ -1,43 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import {
+  Container,
+} from "semantic-ui-react";
 
-import { getProducts } from "./store/slices/product.slice";
-import { RootState } from "./store/reducers";
-import "./App.css";
+import Footer from "components/footer";
+import Header from "components/header";
 
-import webSocket from "./utils/socket-client";
-
-interface Props {}
-
-const App: React.FC<Props> = (props) => {
-  const dispatch = useDispatch();
-  const [products, setProducts] = useState([]);
-
-  const todos = useSelector(
-    (state: RootState) => state.ProductSlice.products
-  )
-
-  useEffect(() => {
-    dispatch(getProducts());
-  });
-
-  // const [newMessage, setMessage] = useState('')
-
-  // const [allMessages, setAllMessages] = useState<string[]>([])
-
-  // webSocket.on('chat', (data: any) => {
-  //   setAllMessages([...allMessages, data]);
-  // });
-
-  // const sendMessage = () => {
-  //   console.log('SENT');
-
-  //   webSocket.emit('chat', newMessage);
-
-  //   setMessage('');
-  // }
-
-  return (<div className="App"></div>);
+const App = () => {
+  return (
+    <div>
+      <Header />
+        <Container>
+          
+        </Container>
+      <Footer />
+    </div>
+  );
 };
 
 export default App;

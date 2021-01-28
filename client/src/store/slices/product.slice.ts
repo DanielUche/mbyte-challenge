@@ -32,7 +32,9 @@ const productsSlice = createSlice({
     getIsLoading: isLoading,
     getErrorLoading: isErrorLoading,
     getProducts(state, action: PayloadAction<InitialState>) {
-      state = { ...action.payload }
+      const { isLoading, products } = action.payload;
+      state.products = [...products]
+      state.isLoading = isLoading;
     }
   }
 });
@@ -46,10 +48,10 @@ export const getProducts = (): AppThunk => async (dispatch: AppDispatch) => {
     const products: AxiosResponse<any> = await axios.get(`${API_URL}/products`);
     dispatch(productsSlice.actions.getProducts({
       isLoading: false,
-      products: products.data.data.docs
+      products: products.data.docs
     }));
   } catch (err) {
-    dispatch(getErrorLoading(err.toString()));
+    dispatch(getErrorLoading(err.response.data.message));
   }
 }
 
