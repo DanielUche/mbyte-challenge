@@ -1,51 +1,43 @@
-import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import webSocket from './utils/socket-client';
+import { getProducts } from "./store/slices/product.slice";
+import { RootState } from "./store/reducers";
+import "./App.css";
 
+import webSocket from "./utils/socket-client";
 
 interface Props {}
 
 const App: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
+  const [products, setProducts] = useState([]);
 
-  const [newMessage, setMessage] = useState('')
- 
-  const [allMessages, setAllMessages] = useState<string[]>([])
+  const todos = useSelector(
+    (state: RootState) => state.ProductSlice.products
+  )
 
-
-  webSocket.on('chat', (data: any) => {
-    setAllMessages([...allMessages, data]);
+  useEffect(() => {
+    dispatch(getProducts());
   });
 
-  const sendMessage = () => {
-    console.log('SENT');
+  // const [newMessage, setMessage] = useState('')
 
-    webSocket.emit('chat', newMessage);
+  // const [allMessages, setAllMessages] = useState<string[]>([])
 
-    setMessage('');
-  }
+  // webSocket.on('chat', (data: any) => {
+  //   setAllMessages([...allMessages, data]);
+  // });
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <div>
-          <h2>Chat Messages</h2>
-          <div>
-            {
-              allMessages.map((message: String, i: number) => {
-                return <div key={`${i}-Z`}>{message}</div>
-              })
-            }
-          </div>
-          <input onChange={(e) => setMessage(e.target.value)} placeholder="type your message .." />
-          <button onClick={() => sendMessage()}>↪</button>
-        </div>
-      </header>
-    </div>
-  );
-}
+  // const sendMessage = () => {
+  //   console.log('SENT');
 
+  //   webSocket.emit('chat', newMessage);
+
+  //   setMessage('');
+  // }
+
+  return (<div className="App"></div>);
+};
 
 export default App;

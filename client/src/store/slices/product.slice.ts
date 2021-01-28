@@ -1,25 +1,56 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import axios, { AxiosResponse } from 'axios';
 
-interface IProduct {
+import { IProduct } from '../../types';
+import { AppThunk, AppDispatch } from '../';
+import { API_URL } from '../../constant';
 
-}
+interface InitialState {
+  isLoading: boolean;
+  products: IProduct[],
+  error?: string
+};
+
+const initialState: InitialState = {
+  isLoading: false,
+  products: [],
+};
+
+const isLoading = (state: InitialState) => {
+  state.isLoading = true
+};
+
+const isErrorLoading = (state: InitialState, action: PayloadAction<string>) => {
+  state.isLoading = false
+  state.error = action.payload
+};
 
 const productsSlice = createSlice({
   name: 'products',
-  initialState: [],
+  initialState,
   reducers: {
-    getProducts(state: IProduct[], action) {
-      state = [...state, action.payload ]
-    },
-    toggleproducts(state, action) {
-      const products = state.find(products => products.id === action.payload)
-      if (products) {
-        products.completed = !products.completed
-      }
+    getIsLoading: isLoading,
+    getErrorLoading: isErrorLoading,
+    getProducts(state, action: PayloadAction<InitialState>) {
+      state = { ...action.payload }
     }
   }
-})
+});
 
-export const { addproducts, toggleproducts } = productsSlice.actions
 
-export default productsSlice.reducer
+export const { getIsLoading, getErrorLoading } = productsSlice.actions;
+
+export const getProducts = (): AppThunk => async (dispatch: AppDispatch) => {
+  dispatch(getIsLoading());
+  try {
+    const products: AxiosResponse<any> = await axios.get(`${API_URL}/products`);
+    dispatch(productsSlice.actions.getProducts({
+      isLoading: false,
+      products: products.data.data.docs
+    }));
+  } catch (err) {
+    dispatch(getErrorLoading(err.toString()));
+  }
+}
+
+export default productsSlice.reducer;
