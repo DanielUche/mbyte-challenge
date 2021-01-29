@@ -41,12 +41,23 @@ const productsSlice = createSlice({
     },
     addItemToCart(state, action: PayloadAction<string>) {
       const { payload } = action;
-      const { cart } = state;
+      const { cart, products } = state;
+      const productIndex = state.products.findIndex((product) => product._id === payload);
+
       if (cart && cart[payload]) {
-        cart[payload] ++;
+        cart[payload]++;
       } else {
         cart[payload] = 1;
       }
+      const newSelectedItem: any = {
+        ...state.selectedProduct,
+      };
+      newSelectedItem.quantity--;
+      const head = products.slice(0, productIndex - 1);
+      const tail = products.slice(productIndex + 1);
+      const newProducts = [...head, newSelectedItem, ...tail];
+      state.products = [...newProducts];
+      state.selectedProduct = newSelectedItem;
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
       state.selectedProduct = action.payload;
@@ -73,10 +84,15 @@ export const selectProduct = (product: IProduct): AppThunk => (dispatch: AppDisp
 export const addCartToStore = (cart: string): AppThunk => async (dispatch: AppDispatch) => {
   try {
     await axios.get(`${API_URL}/products/add-to-cart/${cart}`);
+
+    dispatch(productsSlice.actions.addItemToCart(cart));
+
+
+
   } catch (error) {
-    
+
   }
-  dispatch(productsSlice.actions.addItemToCart(cart));
+
 }
 
 export default productsSlice.reducer;

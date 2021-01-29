@@ -5,17 +5,15 @@ import { Button, Header, Modal, Grid, Divider, List } from "semantic-ui-react";
 import { IModalProps } from "types";
 import { RootState } from "store/reducers";
 
-
 interface IModal extends IModalProps {
   toggleOpen: Function;
   addToCart: Function;
 }
 
-
 const ProductModal: React.FC<IModal> = (props) => {
-  const { shouldOpen: open, toggleOpen, selectedProduct, addToCart } = props;
+  const { shouldOpen: open, toggleOpen, addToCart } = props;
 
-  const { cart } = useSelector(
+  const { cart, selectedProduct } = useSelector(
     (state: RootState) => state.ProductSlice
   );
 
@@ -59,7 +57,13 @@ const ProductModal: React.FC<IModal> = (props) => {
               </List>
               <br />
               <Divider />
-              <Header size="tiny"> This items in cart: { selectedProduct  && cart[selectedProduct._id] ? cart[selectedProduct._id] : 0 } </Header>
+              <Header size="tiny">
+                {" "}
+                This items in cart:{" "}
+                {selectedProduct && cart[selectedProduct._id]
+                  ? cart[selectedProduct._id]
+                  : 0}{" "}
+              </Header>
             </Grid.Column>
           </Grid>
         </Modal.Description>

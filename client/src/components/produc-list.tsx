@@ -13,7 +13,6 @@ interface Props {
 }
 
 const options: IModalProps = {
-  selectedProduct: null,
   shouldOpen: false,
 };
 
@@ -41,7 +40,6 @@ const ProductList: React.FC<Props> = (props) => {
     <div>
       <ProductModal
         shouldOpen={modalOption.shouldOpen}
-        selectedProduct={modalOption.selectedProduct}
         toggleOpen={toggleOpen}
         addToCart={addToCart}
       />

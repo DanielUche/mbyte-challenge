@@ -9,17 +9,12 @@ import ProductList from "components/produc-list";
 import { getProducts, addCartToStore } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
 
-import { ICartItem } from "types";
-
 interface Props {};
 
-let iniTialCart: ICartItem = {};
 
 const App: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
-  const [product, setProduct] = useState([]);
 
-  // const [cart, setCartItem] = useState(iniTialCart);
 
   const { products, isLoading, cart } = useSelector(
     (state: RootState) => state.ProductSlice
@@ -33,8 +28,6 @@ const App: React.FC<Props> = (props) => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-
-  console.log(cart);
 
 
   return (

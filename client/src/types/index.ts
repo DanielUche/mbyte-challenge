@@ -1,12 +1,11 @@
 export interface IProduct {
-  _id: number;
+  _id: string;
   name: string;
   quantity: number;
   price: number;
   description: string;
 }
 export interface IModalProps {
-  selectedProduct: IProduct | null;
   shouldOpen: boolean
 }
 
