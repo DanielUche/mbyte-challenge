@@ -6,15 +6,17 @@ import { AppThunk, AppDispatch } from '../';
 import { API_URL } from 'constant';
 
 interface InitialState {
-  isLoading?: boolean;
-  products: IProduct[],
-  selectedProduct?: IProduct,
+  isLoading?: boolean
+  isCartLoading?: boolean
+  products: IProduct[]
+  selectedProduct?: IProduct
   error?: string
   cart: ICartItem
 };
 
 const initialState: InitialState = {
   isLoading: false,
+  isCartLoading: false,
   products: [],
   selectedProduct: undefined,
   cart: {}
@@ -22,6 +24,14 @@ const initialState: InitialState = {
 
 const isLoading = (state: InitialState) => {
   state.isLoading = true
+};
+
+const isCartLoading = (state: InitialState) => {
+  state.isCartLoading = true
+};
+
+const clearCartLoading = (state: InitialState) => {
+  state.isCartLoading = false;
 };
 
 const isErrorLoading = (state: InitialState, action: PayloadAction<string>) => {
@@ -35,6 +45,8 @@ const productsSlice = createSlice({
   reducers: {
     getIsLoading: isLoading,
     getErrorLoading: isErrorLoading,
+    getCartLoading: isCartLoading,
+    getClearCartLoading: clearCartLoading,
     getProducts(state, action: PayloadAction<IProduct[]>) {
       state.products = [...action.payload];
       state.isLoading = false;
@@ -58,6 +70,8 @@ const productsSlice = createSlice({
       const newProducts = [...head, newSelectedItem, ...tail];
       state.products = [...newProducts];
       state.selectedProduct = newSelectedItem;
+      state.isCartLoading = false;
+      state.error ='';
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
       state.selectedProduct = action.payload;
@@ -65,7 +79,7 @@ const productsSlice = createSlice({
   }
 });
 
-export const { getIsLoading, getErrorLoading } = productsSlice.actions;
+export const { getIsLoading, getCartLoading ,getErrorLoading, getClearCartLoading } = productsSlice.actions;
 
 export const getProducts = (): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(getIsLoading());
@@ -83,16 +97,12 @@ export const selectProduct = (product: IProduct): AppThunk => (dispatch: AppDisp
 
 export const addCartToStore = (cart: string): AppThunk => async (dispatch: AppDispatch) => {
   try {
+    dispatch(getCartLoading());
     await axios.get(`${API_URL}/products/add-to-cart/${cart}`);
-
     dispatch(productsSlice.actions.addItemToCart(cart));
-
-
-
-  } catch (error) {
-
+  } catch (err) {
+    dispatch(getErrorLoading(err.response.data));
   }
-
 }
 
 export default productsSlice.reducer;

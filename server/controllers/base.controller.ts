@@ -2,7 +2,7 @@ import {Request, Response} from 'express'
 
   class BaseController {
     static async errorHandler(res: Response, error: any) {
-      const codes = [500];
+      const codes = [500, 400];
       const { statusCode } = error;
       if (codes.includes(statusCode)) {
         return res.status(error.statusCode).send(error.message);

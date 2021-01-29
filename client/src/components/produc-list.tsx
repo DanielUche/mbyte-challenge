@@ -1,11 +1,12 @@
 import React from "react";
 import { Button, Table } from "semantic-ui-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IProduct, IModalProps } from "types";
 
 
 import ProductModal from "components/product-modal";
-import { selectProduct } from "store/slices/product.slice";
+import { selectProduct, getClearCartLoading } from "store/slices/product.slice";
+import { RootState } from "store/reducers";
 
 interface Props {
   products: IProduct[];
@@ -21,12 +22,23 @@ const ProductList: React.FC<Props> = (props) => {
   const { products, addToCart  } = props;
   const [modalOption, setOpen] = React.useState<IModalProps>(options);
 
+  const { isCartLoading } = useSelector(
+    (state: RootState) => state.ProductSlice
+  );
+
+
   const toggleOpen = () =>
+  {
     setOpen((prevState: IModalProps) => ({
       ...prevState,
       shouldOpen: !prevState.shouldOpen,
     }));
 
+    if(isCartLoading) {
+      dispatch(getClearCartLoading())
+    }
+  }
+   
   const openModal = (selectedProduct: IProduct) => {
     dispatch(selectProduct(selectedProduct))
     setOpen((prevState: IModalProps) => ({

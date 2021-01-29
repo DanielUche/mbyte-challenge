@@ -10,7 +10,7 @@ export interface UpdatePayload {
 class ProductServices {
 
   static async getProducts(offset: number, limit: number) {
-    return await Products.paginate({}, { offset, limit });
+    return await Products.paginate({quantity: { $gte: 1 }}, { offset, limit });
   }
 
   static async getProduct(id: string): Promise<IProduct> {

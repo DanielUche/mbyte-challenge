@@ -2,12 +2,10 @@
 
 export class BadRequestException extends Error {
   public statusCode: number;
-  public errors: any[];
-  constructor(message: string, fieldErrors: any[]) {
+  constructor(message: string) {
     super(message);
     this.statusCode = 400;
     this.message = message || 'Field Validation error';
-    this.errors = fieldErrors;
   }
 }
 

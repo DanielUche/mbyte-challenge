@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container } from "semantic-ui-react";
 
@@ -9,26 +9,22 @@ import ProductList from "components/produc-list";
 import { getProducts, addCartToStore } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
 
-interface Props {};
-
+interface Props {}
 
 const App: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
 
-
-  const { products, isLoading, cart } = useSelector(
+  const { products, isLoading, cart, isCartLoading } = useSelector(
     (state: RootState) => state.ProductSlice
   );
 
   const addToCart = (item: string) => {
-  
     dispatch(addCartToStore(item));
   };
 
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-
 
   return (
     <div>
@@ -37,6 +33,7 @@ const App: React.FC<Props> = (props) => {
         <ProductList products={products} addToCart={addToCart} />
       </Container>
       <Footer />
+
     </div>
   );
 };
