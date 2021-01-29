@@ -5,6 +5,8 @@ import ProductServices from '../services/products.services';
 import { BadRequestException } from '../utils/exceptions';
 import BaseController from './base.controller';
 
+import * as Socket from '../utils/socket';
+
 
 class ProductController extends BaseController {
 
@@ -24,13 +26,12 @@ class ProductController extends BaseController {
     try {
       const { id } = req.params;
       const product: IProduct = await ProductServices.getProduct(id);
-      if(Number(product.quantity) === 0) {
-          throw new BadRequestException('No Item left! We ran short of this stock');
+      if (Number(product.quantity) === 0) {
+        throw new BadRequestException('No Item left! We ran short of this stock');
       }
       const newQuantity = Number(product.quantity) - 1;
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
-      console.log(error)
       ProductController.errorHandler(res, error);
     }
   }
