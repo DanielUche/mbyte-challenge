@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { IProduct } from '../database/models/products';
 
 import ProductServices from '../services/products.services';
 import { NotFoundException } from '../utils/exceptions';
@@ -12,8 +13,19 @@ class ProductController extends BaseController {
       const { page, limit } = req.query;
       const offset: number = page ? Number(page) : 0;
       const plimit: number = limit ? Number(limit) : 20;
-      const products = await ProductServices.getProducts(offset, plimit); 
+      const products = await ProductServices.getProducts(offset, plimit);
       return res.send(products);
+    } catch (error) {
+      ProductController.errorHandler(res, error);
+    }
+  }
+
+  static async addToCart(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const product: IProduct = await ProductServices.getProduct(id);
+      const newQuantity = Number(product.quantity) - 1;
+      return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
       ProductController.errorHandler(res, error);
     }

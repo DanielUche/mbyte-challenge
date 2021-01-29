@@ -1,7 +1,15 @@
 export interface IProduct {
-  id?: number;
+  _id: number;
   name: string;
-  item: string;
-  count: number;
+  quantity: number;
   price: number;
+  description: string;
+}
+export interface IModalProps {
+  selectedProduct: IProduct | null;
+  shouldOpen: boolean
+}
+
+export interface ICartItem {
+  [key: string]: number
 }

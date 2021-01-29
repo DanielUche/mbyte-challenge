@@ -23,13 +23,11 @@ const Header = () => {
     boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
   };
 
-  const [overlayFixed, setOverlayFixed] = useState(false);
+
   const [menuFixed, setMenuFixed] = useState(false);
 
 
   const stickTopMenu = () => setMenuFixed(true);
-
-
   const unStickTopMenu = () => setMenuFixed(false);
 
   return (
