@@ -70,7 +70,12 @@ export const selectProduct = (product: IProduct): AppThunk => (dispatch: AppDisp
   dispatch(productsSlice.actions.selectProduct(product));
 }
 
-export const addCartToStore = (cart: string): AppThunk => (dispatch: AppDispatch) => {
+export const addCartToStore = (cart: string): AppThunk => async (dispatch: AppDispatch) => {
+  try {
+    await axios.get(`${API_URL}/products/add-to-cart/${cart}`);
+  } catch (error) {
+    
+  }
   dispatch(productsSlice.actions.addItemToCart(cart));
 }
 
