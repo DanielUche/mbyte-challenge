@@ -35,7 +35,6 @@ const SOCKET_PORT = socketPort ? parseInt(socketPort as string, 10) : 5000;
 io.listen(SOCKET_PORT);
 
 
-
 server.listen(SERVER_PORT, () => {
   console.log(`Server is listening on port ${SERVER_PORT}`)
 });
