@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from 'axios';
 
-import { ICartItem, IProduct } from 'types';
+import { IAcknowledgementResponse, ICartItem, IProduct } from 'types';
 import { AppThunk, AppDispatch } from '../';
 import webSocket from "utils/socket-client";
 import { API_URL } from 'constant';
@@ -40,6 +40,25 @@ const isErrorLoading = (state: InitialState, action: PayloadAction<string>) => {
   state.error = action.payload
 };
 
+const updateCartItems = (product: IProduct | any, products: IProduct[], cart: ICartItem, payload: string) => {
+  const productIndex = products.findIndex((product) => product._id === payload);
+
+  if (cart && cart[payload]) {
+    cart[payload]++;
+  } else {
+    cart[payload] = 1;
+  }
+  const newSelectedItem: IProduct = {
+    ...product,
+  };
+  newSelectedItem.quantity--;
+  const head = products.slice(0, productIndex - 1);
+  const tail = products.slice(productIndex + 1);
+  const newProducts = [...head, newSelectedItem, ...tail];
+
+  return { newProducts, newSelectedItem }
+}
+
 const productsSlice = createSlice({
   name: 'products',
   initialState,
@@ -54,26 +73,48 @@ const productsSlice = createSlice({
     },
     addItemToCart(state, action: PayloadAction<string>) {
       const { payload } = action;
-      const { cart, products } = state;
-      const productIndex = state.products.findIndex((product) => product._id === payload);
-
-      if (cart && cart[payload]) {
-        cart[payload]++;
-      } else {
-        cart[payload] = 1;
-      }
-      const newSelectedItem: any = {
-        ...state.selectedProduct,
-      };
-      newSelectedItem.quantity--;
-      const head = products.slice(0, productIndex - 1);
-      const tail = products.slice(productIndex + 1);
-      const newProducts = [...head, newSelectedItem, ...tail];
+      const { cart, products, selectedProduct } = state;
+      const { newProducts, newSelectedItem } = updateCartItems(selectedProduct, products, cart, payload);
       state.products = [...newProducts];
       state.selectedProduct = newSelectedItem;
       state.isCartLoading = false;
-      state.error ='';
+      state.error = '';
       webSocket.emit('add-cart-item', newSelectedItem);
+    },
+    refreshCartOnAdd(state, action: PayloadAction<string>) {
+      const { payload } = action;
+      const { products } = state;
+      const productIndex = products.findIndex((product) => product._id === payload);
+      products[productIndex].quantity--;
+      state.products = [...products];
+    },
+    refreshCartOnRemove(state, action: PayloadAction<string>) {
+      const { payload } = action;
+      const { products } = state;
+      console.log(payload);
+      const productIndex = products.findIndex((product) => product._id === payload);
+      products[productIndex].quantity++;
+      state.products = [...products];
+    },
+    removeItemFromCart(state, action: PayloadAction<string>) {
+      const { payload } = action;
+      const { cart, products } = state;
+      const productIndex = state.products.findIndex((product) => product._id === payload);
+      if (cart && cart[payload]) {
+        cart[payload]--;
+        const newSelectedItem: any = {
+          ...state.selectedProduct,
+        };
+        newSelectedItem.quantity++;
+        const head = products.slice(0, productIndex - 1);
+        const tail = products.slice(productIndex + 1);
+        const newProducts = [...head, newSelectedItem, ...tail];
+        state.products = [...newProducts];
+        state.selectedProduct = newSelectedItem;
+        state.isCartLoading = false;
+        state.error = '';
+        webSocket.emit('remove-cart-item', newSelectedItem);
+      }
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
       state.selectedProduct = action.payload;
@@ -81,7 +122,11 @@ const productsSlice = createSlice({
   }
 });
 
-export const { getIsLoading, getCartLoading ,getErrorLoading, getClearCartLoading } = productsSlice.actions;
+export const {
+  getIsLoading, getCartLoading,
+  getErrorLoading, getClearCartLoading,
+  refreshCartOnAdd, refreshCartOnRemove
+} = productsSlice.actions;
 
 export const getProducts = (): AppThunk => async (dispatch: AppDispatch) => {
   dispatch(getIsLoading());
@@ -103,6 +148,33 @@ export const addCartToStore = (cart: string): AppThunk => async (dispatch: AppDi
     await axios.get(`${API_URL}/products/add-to-cart/${cart}`);
     dispatch(productsSlice.actions.addItemToCart(cart));
   } catch (err) {
+    dispatch(getErrorLoading(err.response.data));
+  }
+}
+
+export const removeCartItemFromStore = (cart: string): AppThunk => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(getCartLoading());
+    await axios.get(`${API_URL}/products/remove-Cart-item/${cart}`);
+    dispatch(productsSlice.actions.removeItemFromCart(cart));
+  } catch (err) {
+    dispatch(getErrorLoading(err.response.data));
+  }
+}
+
+export const updateCartOnAcknolodgement = (data: IAcknowledgementResponse): AppThunk => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(productsSlice.actions.refreshCartOnAdd(data.id));
+  } catch (err) {
+    dispatch(getErrorLoading(err.response.data));
+  }
+}
+
+export const updateCartOnRemove = (data: IAcknowledgementResponse): AppThunk => async (dispatch: AppDispatch) => {
+  try {
+    dispatch(productsSlice.actions.refreshCartOnRemove(data.id));
+  } catch (err) {
+    console.log(err);
     dispatch(getErrorLoading(err.response.data));
   }
 }

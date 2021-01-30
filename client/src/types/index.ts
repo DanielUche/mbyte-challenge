@@ -12,3 +12,8 @@ export interface IModalProps {
 export interface ICartItem {
   [key: string]: number
 }
+
+export interface IAcknowledgementResponse {
+  msg: string;
+  id: string
+}

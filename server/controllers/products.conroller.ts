@@ -10,7 +10,6 @@ import Socket, { connectedInstace } from '../utils/socket';
 
 class ProductController extends BaseController {
 
-
   static async getProducts(req: Request, res: Response) {
     try {
       const { page, limit } = req.query;
@@ -32,8 +31,31 @@ class ProductController extends BaseController {
       }
       const newQuantity = Number(product.quantity) - 1;
       const socket = connectedInstace();
-      socket.on('add-cart-item', (data: IProduct) => {
-        socket.broadcast.emit('add-cart-item-ack', `${data.name} quantity incremented by 1`);
+      socket.on('add-cart-item', () => {
+        socket.broadcast.emit('add-cart-item-ack',
+          {
+            msg: `${product.name} quantity incremented by 1`,
+            id: product._id
+          });
+      });
+      return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
+    } catch (error) {
+      ProductController.errorHandler(res, error);
+    }
+  }
+
+  static async removeItemFromCart(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const product: IProduct = await ProductServices.getProduct(id);
+      const newQuantity = Number(product.quantity) + 1;
+      const socket = connectedInstace();
+      socket.on('remove-cart-item', () => {
+        socket.broadcast.emit('remove-cart-item-ack',
+          {
+            msg: `${product.name} quantity decremented by 1`,
+            id: product._id
+          });
       });
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {

@@ -16,12 +16,13 @@ import { RootState } from "store/reducers";
 interface IModal extends IModalProps {
   toggleOpen: Function;
   addToCart: Function;
+  removeCartItem: Function;
 }
 
 const ProductModal: React.FC<IModal> = (props) => {
-  const { shouldOpen: open, toggleOpen, addToCart } = props;
+  const { shouldOpen: open, toggleOpen, addToCart, removeCartItem } = props;
 
-  const { cart, selectedProduct, isCartLoading, error  } = useSelector(
+  const { cart, selectedProduct, isCartLoading, error } = useSelector(
     (state: RootState) => state.ProductSlice
   );
 
@@ -30,9 +31,7 @@ const ProductModal: React.FC<IModal> = (props) => {
       {" "}
       {isCartLoading && error && (
         <Message negative attached>
-          <Message.Header>
-            An error has occured
-          </Message.Header>
+          <Message.Header>An error has occured</Message.Header>
           <p>{error}</p>
         </Message>
       )}
@@ -72,10 +71,14 @@ const ProductModal: React.FC<IModal> = (props) => {
                   </List.Item>
                   <List.Item>
                     <Button
-                      disabled={isCartLoading}
+                      disabled={
+                        (!isCartLoading && Object.keys(cart).length === 0) ||
+                        isCartLoading
+                      }
                       basic
                       color="yellow"
                       content="remove from cart"
+                      onClick={() => removeCartItem(selectedProduct?._id)}
                     />
                   </List.Item>
                 </List>

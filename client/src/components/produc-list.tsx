@@ -1,17 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Table } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";
-import { IProduct, IModalProps } from "types";
-
+import { IProduct, IModalProps, IAcknowledgementResponse } from "types";
 
 import ProductModal from "components/product-modal";
 import { selectProduct, getClearCartLoading } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
 import CartAckModal from "./cart-ack=modal";
+import webSocket from "utils/socket-client";
+import { updateCartOnAcknolodgement, updateCartOnRemove } from "store/slices/product.slice";
 
 interface Props {
   products: IProduct[];
-  addToCart : Function
+  addToCart: Function;
+  removeCartItem: Function;
 }
 
 const options: IModalProps = {
@@ -20,33 +22,52 @@ const options: IModalProps = {
 
 const ProductList: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
-  const { products, addToCart  } = props;
+  const { products, addToCart, removeCartItem } = props;
   const [modalOption, setOpen] = React.useState<IModalProps>(options);
+  const [openAckModal, setAckModal] = React.useState(false);
+  const [ackData, setAckData] = useState("");
 
   const { isCartLoading } = useSelector(
     (state: RootState) => state.ProductSlice
   );
 
-
-  const toggleOpen = () =>
-  {
+  const toggleOpen = () => {
     setOpen((prevState: IModalProps) => ({
       ...prevState,
       shouldOpen: !prevState.shouldOpen,
     }));
 
-    if(isCartLoading) {
-      dispatch(getClearCartLoading())
+    if (isCartLoading) {
+      dispatch(getClearCartLoading());
     }
-  }
-   
+  };
+
   const openModal = (selectedProduct: IProduct) => {
-    dispatch(selectProduct(selectedProduct))
+    dispatch(selectProduct(selectedProduct));
     setOpen((prevState: IModalProps) => ({
       ...prevState,
       selectedProduct,
       shouldOpen: !prevState.shouldOpen,
     }));
+  };
+
+  useEffect(() => {
+    webSocket.on("add-cart-item-ack", (data: IAcknowledgementResponse) => {
+      setAckModal(!openAckModal);
+      setAckData(data.msg);
+      dispatch(updateCartOnAcknolodgement(data));
+    });
+    webSocket.on("remove-cart-item-ack", (data: IAcknowledgementResponse) => {
+      console.log(data);
+      setAckModal(!openAckModal);
+      setAckData(data.msg);
+      dispatch(updateCartOnRemove(data));
+    });
+  }, []);
+  
+
+  const toggleAckModal = () => {
+    setAckModal(!openAckModal);
   };
 
   return (
@@ -55,9 +76,14 @@ const ProductList: React.FC<Props> = (props) => {
         shouldOpen={modalOption.shouldOpen}
         toggleOpen={toggleOpen}
         addToCart={addToCart}
+        removeCartItem={removeCartItem}
       />
 
-      <CartAckModal/>
+      <CartAckModal
+        msg={ackData}
+        open={openAckModal}
+        openModal={toggleAckModal}
+      />
 
       <Table striped>
         <Table.Header>

@@ -1,26 +1,28 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Header, Icon, Modal } from "semantic-ui-react";
-import webSocket from "utils/socket-client";
 
-interface Props {}
+interface Props {
+  msg: string;
+  open: boolean;
+  openModal: Function;
+}
 
-const CartAckModal: React.FC<Props> = () => {
-  const [open, setOpen] = React.useState(false);
-  const [wsResponse, setResponse] = useState("");
+const CartAckModal: React.FC<Props> = (props) => {
+  const { msg, open, openModal } = props;
 
-  webSocket.on("add-cart-item-ack", (data: string) => {
-    setOpen(true);
-    setResponse(data);
-  });
+  // webSocket.on("remove-cart-item-ack", (data: string) => {
+  //   setOpen(true);
+  //   setResponse(data);
+  // });
 
   return (
     <Modal closeIcon open={open}>
       <Header icon="archive" content="Some changed the data" />
       <Modal.Content>
-        <Header>{wsResponse}</Header>
+        <Header>{msg}</Header>
       </Modal.Content>
       <Modal.Actions>
-        <Button color="green" onClick={() => setOpen(false)}>
+        <Button color="green" onClick={() => openModal()}>
           <Icon name="checkmark" /> Close
         </Button>
       </Modal.Actions>
