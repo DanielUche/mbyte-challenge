@@ -6,8 +6,14 @@ import {
   Menu,
   Visibility,
 } from "semantic-ui-react";
+import { ICartItem } from "types";
 
-const Header = () => {
+interface Props {
+  cart: ICartItem;
+}
+
+const Header: React.FC<Props> = (props) => {
+  const { cart } = props;
   const menuStyle = {
     border: "none",
     borderRadius: 0,
@@ -23,12 +29,17 @@ const Header = () => {
     boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
   };
 
-
   const [menuFixed, setMenuFixed] = useState(false);
-
 
   const stickTopMenu = () => setMenuFixed(true);
   const unStickTopMenu = () => setMenuFixed(false);
+
+  const cartItemCount = (): number => {
+    if (Object.keys(cart).length) {
+      return Object.values(cart).reduce((a, b) => a + b);
+    }
+    return 0;
+  };
 
   return (
     <Visibility
@@ -50,11 +61,13 @@ const Header = () => {
           <Menu.Item as="a">Articles</Menu.Item>
 
           <Menu.Menu position="right">
-            <Dropdown text="Dropdown" pointing className="link item">
+            <Dropdown
+              text={`Total Cart Items: ${cartItemCount()} Item(s)`}
+              pointing
+              className="link item"
+            >
               <Dropdown.Menu>
-                <Dropdown.Item>List Item</Dropdown.Item>
-                <Dropdown.Item>List Item</Dropdown.Item>
-                <Dropdown.Item>List Item</Dropdown.Item>
+                <Dropdown.Item>Checkout Cart</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
           </Menu.Menu>

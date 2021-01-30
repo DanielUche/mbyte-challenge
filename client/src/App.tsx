@@ -15,7 +15,7 @@ interface Props {}
 const App: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
 
-  const { products, isLoading, cart, isCartLoading } = useSelector(
+  const { products, isLoading, cart } = useSelector(
     (state: RootState) => state.ProductSlice
   );
 
@@ -28,23 +28,17 @@ const App: React.FC<Props> = (props) => {
   }, [dispatch]);
 
 
-    // const [newMessage, setMessage] = useState('')
+  webSocket.on("add-cart-item-ack", (data: any) => {
+    console.log(data);
+  });
 
-    const [allMessages, setAllMessages] = useState<string[]>([])
-
-    webSocket.on('add-cart-item-ack', (data: any) => {
-      console.log(data);
-    });
-
-    
   return (
     <div>
-      <Header />
+      <Header cart={cart} />
       <Container>
         <ProductList products={products} addToCart={addToCart} />
       </Container>
       <Footer />
-
     </div>
   );
 };
