@@ -33,7 +33,7 @@ class ProductController extends BaseController {
       const newQuantity = Number(product.quantity) - 1;
       const socket = connectedInstace();
       socket.on('add-cart-item', (data: IProduct) => {
-        socket.broadcast.emit('add-cart-item-ack', data)
+        socket.broadcast.emit('add-cart-item-ack', `${data.name} quantity incremented by 1`);
       });
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {

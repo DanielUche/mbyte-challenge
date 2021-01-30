@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Container } from "semantic-ui-react";
 
@@ -8,7 +8,6 @@ import ProductList from "components/produc-list";
 
 import { getProducts, addCartToStore } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
-import webSocket from "utils/socket-client";
 
 interface Props {}
 
@@ -28,9 +27,6 @@ const App: React.FC<Props> = (props) => {
   }, [dispatch]);
 
 
-  webSocket.on("add-cart-item-ack", (data: any) => {
-    console.log(data);
-  });
 
   return (
     <div>
