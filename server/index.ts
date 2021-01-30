@@ -17,14 +17,7 @@ app.use(cors());
 routes(app);
 startDB(); //start database
 
-io.on('connection', (client: any) => {
-  console.log('a user connected');
 
-  // client.on('chat', (data: any) => {
-  //   console.log('Message received -->', data);
-  //   io.emit('chat', data);
-  // });
-});
 
 const { SOCKET_PORT: socketPort, SERVER_PORT: serverPort } = process.env;
 

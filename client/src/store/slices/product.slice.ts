@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 
 import { ICartItem, IProduct } from 'types';
 import { AppThunk, AppDispatch } from '../';
+import webSocket from "utils/socket-client";
 import { API_URL } from 'constant';
 
 interface InitialState {
@@ -72,6 +73,7 @@ const productsSlice = createSlice({
       state.selectedProduct = newSelectedItem;
       state.isCartLoading = false;
       state.error ='';
+      webSocket.emit('add-cart-item', newSelectedItem);
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
       state.selectedProduct = action.payload;

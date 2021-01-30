@@ -8,7 +8,7 @@ import ProductList from "components/produc-list";
 
 import { getProducts, addCartToStore } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
-import webSocket from "./utils/socket-client";
+import webSocket from "utils/socket-client";
 
 interface Props {}
 
@@ -32,18 +32,11 @@ const App: React.FC<Props> = (props) => {
 
     const [allMessages, setAllMessages] = useState<string[]>([])
 
-    webSocket.on('chat', (data: any) => {
-      setAllMessages([...allMessages, data]);
+    webSocket.on('add-cart-item-ack', (data: any) => {
+      console.log(data);
     });
 
-    // const sendMessage = () => {
-    //   console.log('SENT');
-
-    //   webSocket.emit('chat', newMessage);
-
-    //   setMessage('');
-    // }
-
+    
   return (
     <div>
       <Header />
