@@ -54,9 +54,9 @@ const updateCartItems = (product: IProduct | any, products: IProduct[], cart: IC
 
   const newProducts = [...products.slice(0,
     productIndex), Object.assign({}, newSelectedItem,
-      ...products.slice(productIndex + 1))]
+      ...products.slice(productIndex + 1))];
 
-  return { newProducts, newSelectedItem }
+  return { newProducts, newSelectedItem };
 }
 
 const productsSlice = createSlice({
@@ -133,7 +133,7 @@ export const getProducts = (): AppThunk => async (dispatch: AppDispatch) => {
     const products: AxiosResponse<any> = await axios.get(`${API_URL}/products`);
     dispatch(productsSlice.actions.getProducts(products.data.docs));
   } catch (err) {
-    dispatch(getErrorLoading(err.response.data.message));
+    dispatch(getErrorLoading(err?.response?.data.message));
   }
 }
 
