@@ -5,13 +5,10 @@ import ProductServices from '../services/products.services';
 import { BadRequestException } from '../utils/exceptions';
 import BaseController from './base.controller';
 
-import Socket, { connectedInstace } from '../utils/socket';
-
 class ProductController extends BaseController {
   socket: any;
   constructor() {
     super();
-    this.socket = () => connectedInstace();
   }
 
   async getProducts(req: Request, res: Response) {
@@ -34,11 +31,6 @@ class ProductController extends BaseController {
         throw new BadRequestException('No Item left! We ran short of this stock');
       }
       const newQuantity = Number(product.quantity) - 1;
-        this.socket().broadcast.emit('add-cart-item-ack',
-          {
-            msg: `${product.name} quantity decremented by 1`,
-            id: product._id
-          });
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
       ProductController.errorHandler(res, error);
@@ -50,11 +42,7 @@ class ProductController extends BaseController {
       const { id } = req.params;
       const product: IProduct = await ProductServices.getProduct(id);
       const newQuantity = Number(product.quantity) + 1;
-        this.socket().broadcast.emit('remove-cart-item-ack',
-          {
-            msg: `${product.name} quantity incremented by 1`,
-            id: product._id
-          });
+        
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
       ProductController.errorHandler(res, error);

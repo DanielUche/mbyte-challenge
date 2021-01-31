@@ -79,6 +79,7 @@ const productsSlice = createSlice({
       state.selectedProduct = newSelectedItem;
       state.isCartLoading = false;
       state.error = '';
+      webSocket.emit('add-cart-item', selectedProduct);
     },
     refreshCartOnAdd(state, action: PayloadAction<string>) {
       const { payload } = action;
@@ -96,7 +97,7 @@ const productsSlice = createSlice({
     },
     removeItemFromCart(state, action: PayloadAction<string>) {
       const { payload } = action;
-      const { cart, products } = state;
+      const { cart, products, selectedProduct } = state;
       const productIndex = state.products.findIndex((product) => product._id === payload);
       if (cart && cart[payload]) {
         cart[payload]--;
@@ -112,6 +113,7 @@ const productsSlice = createSlice({
         state.isCartLoading = false;
         state.error = '';
       }
+      webSocket.emit('remove-cart-item', selectedProduct);
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
       state.selectedProduct = action.payload;
