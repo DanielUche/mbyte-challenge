@@ -5,13 +5,15 @@ import {Request, Response} from 'express'
       const codes = [500, 400];
       const { statusCode } = error;
       if (codes.includes(statusCode)) {
-        return res.status(error.statusCode).send(error.message);
+        res.status(error.statusCode);
+        return res.send(error.message);
       }
-      console.log(error);
       if (!error.statusCode) {
-        return res.status(501).send(error.message);
+        res.status(501);
+        return res.send(error.message);
       }   
-      return res.status(error.statusCode).send(error);
+      res.status(error.statusCode);
+      return res.send(error);
     }
   }
   

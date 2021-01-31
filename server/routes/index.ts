@@ -1,4 +1,4 @@
-import { Application, Response, Router } from 'express';
+import { Application, Response, Router, NextFunction, Errback } from 'express';
 import cors from 'cors';
 
 import ProductsRoutes from './product.routes';
