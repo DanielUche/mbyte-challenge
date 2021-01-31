@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table } from "semantic-ui-react";
+import { Header, Table } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";
 import { IProduct, IModalProps, IAcknowledgementResponse } from "types";
 
@@ -8,7 +8,10 @@ import { selectProduct, getClearCartLoading } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
 import CartAckModal from "./cart-ack=modal";
 import webSocket from "utils/socket-client";
-import { updateCartOnAcknolodgement, updateCartOnRemove } from "store/slices/product.slice";
+import {
+  updateCartOnAcknolodgement,
+  updateCartOnRemove,
+} from "store/slices/product.slice";
 
 interface Props {
   products: IProduct[];
@@ -58,13 +61,11 @@ const ProductList: React.FC<Props> = (props) => {
       dispatch(updateCartOnAcknolodgement(data));
     });
     webSocket.on("remove-cart-item-ack", (data: IAcknowledgementResponse) => {
-      console.log(data);
       setAckModal(!openAckModal);
       setAckData(data.msg);
       dispatch(updateCartOnRemove(data));
     });
   }, []);
-  
 
   const toggleAckModal = () => {
     setAckModal(!openAckModal);
@@ -84,33 +85,25 @@ const ProductList: React.FC<Props> = (props) => {
         open={openAckModal}
         openModal={toggleAckModal}
       />
-
+      <Header size="large">Our Products</Header>
       <Table striped>
         <Table.Header>
           <Table.Row>
             <Table.HeaderCell>Item Name</Table.HeaderCell>
             <Table.HeaderCell>Price</Table.HeaderCell>
             <Table.HeaderCell>Quantity</Table.HeaderCell>
-            <Table.HeaderCell>Called</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
         <Table.Body>
           {products.map((product, i) => {
             return (
-              <Table.Row key={`${i}-product-list`}>
-                <Table.Cell>{product.name}</Table.Cell>
+              <Table.Row key={`${i}-product-list`} className="item-row">
+                <Table.Cell className="item-color ">
+                  <p onClick={() => openModal(product)}>{product.name}</p>
+                </Table.Cell>
                 <Table.Cell>{product.price}</Table.Cell>
                 <Table.Cell>{product.quantity}</Table.Cell>
-                <Table.Cell>
-                  <Button
-                    content="Yep, that's me"
-                    labelPosition="right"
-                    icon="checkmark"
-                    onClick={() => openModal(product)}
-                    positive
-                  />
-                </Table.Cell>
               </Table.Row>
             );
           })}

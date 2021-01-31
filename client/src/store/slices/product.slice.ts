@@ -174,7 +174,6 @@ export const updateCartOnRemove = (data: IAcknowledgementResponse): AppThunk => 
   try {
     dispatch(productsSlice.actions.refreshCartOnRemove(data.id));
   } catch (err) {
-    console.log(err);
     dispatch(getErrorLoading(err.response.data));
   }
 }

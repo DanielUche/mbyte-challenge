@@ -5,6 +5,7 @@ import { Container } from "semantic-ui-react";
 import Footer from "components/footer";
 import Header from "components/header";
 import ProductList from "components/produc-list";
+import 'styles.css'
 
 import {
   getProducts,

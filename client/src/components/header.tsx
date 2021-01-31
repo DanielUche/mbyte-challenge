@@ -57,8 +57,6 @@ const Header: React.FC<Props> = (props) => {
             <Image size="mini" src="/logo.png" />
           </Menu.Item>
           <Menu.Item header>Malware Byte Test</Menu.Item>
-          <Menu.Item as="a">Blog</Menu.Item>
-          <Menu.Item as="a">Articles</Menu.Item>
 
           <Menu.Menu position="right">
             <Dropdown
