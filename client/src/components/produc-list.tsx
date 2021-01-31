@@ -6,7 +6,7 @@ import { IProduct, IModalProps, IAcknowledgementResponse } from "types";
 import ProductModal from "components/product-modal";
 import { selectProduct, getClearCartLoading } from "store/slices/product.slice";
 import { RootState } from "store/reducers";
-import CartAckModal from "./cart-ack=modal";
+import CartAckModal from "./cart-ack-modal";
 import webSocket from "utils/socket-client";
 import {
   updateCartOnAcknolodgement,

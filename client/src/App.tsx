@@ -34,6 +34,7 @@ const App: React.FC<Props> = (props) => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
+  
 
   return (
     <div>

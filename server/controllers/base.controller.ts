@@ -7,9 +7,10 @@ import {Request, Response} from 'express'
       if (codes.includes(statusCode)) {
         return res.status(error.statusCode).send(error.message);
       }
+      console.log(error);
       if (!error.statusCode) {
         return res.status(501).send(error.message);
-      }
+      }   
       return res.status(error.statusCode).send(error);
     }
   }

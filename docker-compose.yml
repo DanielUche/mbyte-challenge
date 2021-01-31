@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  server:
+    container_name: mserver
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes: 
+      - './server:/app'
+      -  '/app/node_modules'
+    ports:
+      - "3001:3001"
+      - "8000:8000"
+      - "5000:5000"
+    environment:
+      - PORT=3001
+      - DB_URL=${DB_URL}
+      - SOCKET_PORT=${SOCKET_PORT}
+      - SERVER_PORT=${SERVER_PORT}
+
+  client:
+    container_name: mclient
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes: 
+      - './client:/app'
+      -  '/app/node_modules'
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+    depends_on: 
+      - server
+  

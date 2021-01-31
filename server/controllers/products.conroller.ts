@@ -7,10 +7,14 @@ import BaseController from './base.controller';
 
 import Socket, { connectedInstace } from '../utils/socket';
 
-
 class ProductController extends BaseController {
+  socket: any;
+  constructor() {
+    super();
+    this.socket = () => connectedInstace();
+  }
 
-  static async getProducts(req: Request, res: Response) {
+  async getProducts(req: Request, res: Response) {
     try {
       const { page, limit } = req.query;
       const offset: number = page ? Number(page) : 0;
@@ -22,7 +26,7 @@ class ProductController extends BaseController {
     }
   }
 
-  static async addToCart(req: Request, res: Response) {
+  addToCart = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const product: IProduct = await ProductServices.getProduct(id);
@@ -30,33 +34,27 @@ class ProductController extends BaseController {
         throw new BadRequestException('No Item left! We ran short of this stock');
       }
       const newQuantity = Number(product.quantity) - 1;
-      const socket = connectedInstace();
-      socket.on('add-cart-item', () => {
-        socket.broadcast.emit('add-cart-item-ack',
+        this.socket().broadcast.emit('add-cart-item-ack',
           {
-            msg: `${product.name} quantity incremented by 1`,
+            msg: `${product.name} quantity decremented by 1`,
             id: product._id
           });
-      });
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
       ProductController.errorHandler(res, error);
     }
   }
 
-  static async removeItemFromCart(req: Request, res: Response) {
+  removeItemFromCart = async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
       const product: IProduct = await ProductServices.getProduct(id);
       const newQuantity = Number(product.quantity) + 1;
-      const socket = connectedInstace();
-      socket.on('remove-cart-item', () => {
-        socket.broadcast.emit('remove-cart-item-ack',
+        this.socket().broadcast.emit('remove-cart-item-ack',
           {
-            msg: `${product.name} quantity decremented by 1`,
+            msg: `${product.name} quantity incremented by 1`,
             id: product._id
           });
-      });
       return res.send(await ProductServices.updateProduct(id, { quantity: newQuantity }));
     } catch (error) {
       ProductController.errorHandler(res, error);

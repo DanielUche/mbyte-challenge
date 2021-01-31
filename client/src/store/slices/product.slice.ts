@@ -42,7 +42,6 @@ const isErrorLoading = (state: InitialState, action: PayloadAction<string>) => {
 
 const updateCartItems = (product: IProduct | any, products: IProduct[], cart: ICartItem, payload: string) => {
   const productIndex = products.findIndex((product) => product._id === payload);
-
   if (cart && cart[payload]) {
     cart[payload]++;
   } else {
@@ -52,9 +51,10 @@ const updateCartItems = (product: IProduct | any, products: IProduct[], cart: IC
     ...product,
   };
   newSelectedItem.quantity--;
-  const head = products.slice(0, productIndex - 1);
-  const tail = products.slice(productIndex + 1);
-  const newProducts = [...head, newSelectedItem, ...tail];
+
+  const newProducts = [...products.slice(0,
+    productIndex), Object.assign({}, newSelectedItem,
+      ...products.slice(productIndex + 1))]
 
   return { newProducts, newSelectedItem }
 }
@@ -79,7 +79,6 @@ const productsSlice = createSlice({
       state.selectedProduct = newSelectedItem;
       state.isCartLoading = false;
       state.error = '';
-      webSocket.emit('add-cart-item', newSelectedItem);
     },
     refreshCartOnAdd(state, action: PayloadAction<string>) {
       const { payload } = action;
@@ -91,7 +90,6 @@ const productsSlice = createSlice({
     refreshCartOnRemove(state, action: PayloadAction<string>) {
       const { payload } = action;
       const { products } = state;
-      console.log(payload);
       const productIndex = products.findIndex((product) => product._id === payload);
       products[productIndex].quantity++;
       state.products = [...products];
@@ -106,14 +104,13 @@ const productsSlice = createSlice({
           ...state.selectedProduct,
         };
         newSelectedItem.quantity++;
-        const head = products.slice(0, productIndex - 1);
-        const tail = products.slice(productIndex + 1);
-        const newProducts = [...head, newSelectedItem, ...tail];
+        const newProducts = [...products.slice(0,
+          productIndex), Object.assign({}, newSelectedItem,
+            ...products.slice(productIndex + 1))]
         state.products = [...newProducts];
         state.selectedProduct = newSelectedItem;
         state.isCartLoading = false;
         state.error = '';
-        webSocket.emit('remove-cart-item', newSelectedItem);
       }
     },
     selectProduct(state, action: PayloadAction<IProduct>) {
