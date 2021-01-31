@@ -7,7 +7,7 @@ const socket: SocketIOClient.Socket = io(`${WS_URL}`,
     { transports: ['websocket'] });
 
 socket.on('connect', () => {
-    console.log(socket.id, '==== user id')
+    console.log(socket.id);
 });
 
 

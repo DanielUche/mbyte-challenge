@@ -47,16 +47,8 @@ const updateCartItems = (product: IProduct | any, products: IProduct[], cart: IC
   } else {
     cart[payload] = 1;
   }
-  const newSelectedItem: IProduct = {
-    ...product,
-  };
-  newSelectedItem.quantity--;
-
-  const newProducts = [...products.slice(0,
-    productIndex), Object.assign({}, newSelectedItem,
-      ...products.slice(productIndex + 1))];
-
-  return { newProducts, newSelectedItem };
+  products[productIndex].quantity--;
+  return products;
 }
 
 const productsSlice = createSlice({
@@ -74,9 +66,8 @@ const productsSlice = createSlice({
     addItemToCart(state, action: PayloadAction<string>) {
       const { payload } = action;
       const { cart, products, selectedProduct } = state;
-      const { newProducts, newSelectedItem } = updateCartItems(selectedProduct, products, cart, payload);
-      state.products = [...newProducts];
-      state.selectedProduct = newSelectedItem;
+      state.products = [...updateCartItems(selectedProduct, products, cart, payload)];
+      state.selectedProduct!.quantity--;
       state.isCartLoading = false;
       state.error = '';
       webSocket.emit('add-cart-item', selectedProduct);
@@ -101,15 +92,9 @@ const productsSlice = createSlice({
       const productIndex = state.products.findIndex((product) => product._id === payload);
       if (cart && cart[payload]) {
         cart[payload]--;
-        const newSelectedItem: any = {
-          ...state.selectedProduct,
-        };
-        newSelectedItem.quantity++;
-        const newProducts = [...products.slice(0,
-          productIndex), Object.assign({}, newSelectedItem,
-            ...products.slice(productIndex + 1))]
-        state.products = [...newProducts];
-        state.selectedProduct = newSelectedItem;
+        products[productIndex].quantity++;
+        state.selectedProduct!.quantity++;
+        state.products = [...products];
         state.isCartLoading = false;
         state.error = '';
       }
