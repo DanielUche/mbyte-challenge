@@ -91,7 +91,11 @@ const productsSlice = createSlice({
       const { cart, products, selectedProduct } = state;
       const productIndex = state.products.findIndex((product) => product._id === payload);
       if (cart && cart[payload]) {
-        cart[payload]--;
+        if(cart[payload] === 1) {
+          delete cart[payload]
+        } else {
+          cart[payload]--;
+        }
         products[productIndex].quantity++;
         state.selectedProduct!.quantity++;
         state.products = [...products];

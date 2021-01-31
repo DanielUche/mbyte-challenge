@@ -16,7 +16,7 @@ const CartAckModal: React.FC<Props> = (props) => {
   // });
 
   return (
-    <Modal closeIcon open={open}>
+    <Modal closeIcon open={open} onClose={() => openModal()}>
       <Header icon="archive" content="Some changed the data" />
       <Modal.Content>
         <Header>{msg}</Header>
