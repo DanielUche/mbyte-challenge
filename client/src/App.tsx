@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Container } from "semantic-ui-react";
+import { Container, Segment, Image, Loader, Dimmer } from "semantic-ui-react";
 
 import Footer from "components/footer";
 import Header from "components/header";
 import ProductList from "components/produc-list";
-import 'styles.css'
+import "styles.css";
 
 import {
   getProducts,
@@ -34,18 +34,27 @@ const App: React.FC<Props> = (props) => {
   useEffect(() => {
     dispatch(getProducts());
   }, [dispatch]);
-  
 
   return (
     <div>
       <Header cart={cart} />
-      <Container>
-        <ProductList
-          products={products}
-          addToCart={addToCart}
-          removeCartItem={removeCartItem}
-        />
-      </Container>
+      
+        {isLoading ? (
+          <Segment>
+            <Dimmer active inverted>
+              <Loader size="large">Loading Products</Loader>
+            </Dimmer>
+            <Image src="https://react.semantic-ui.com/images/wireframe/paragraph.png" />
+          </Segment>
+        ) : (
+          <Container>
+          <ProductList
+            products={products}
+            addToCart={addToCart}
+            removeCartItem={removeCartItem}
+          />
+          </Container>
+        )}
       <Footer />
     </div>
   );
