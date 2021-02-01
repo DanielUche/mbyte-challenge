@@ -3,9 +3,12 @@
 My solution uses a simple socket implementaion.
 
 #  Usage
-clone the repo
+clone the repo 
+
 cd into the project repo
-rename .env-example to env
+
+rename .env-example to env and replace values with envirnment variables
+
 You should have docker installed
 
 ```sh
