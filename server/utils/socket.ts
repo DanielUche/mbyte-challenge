@@ -16,7 +16,7 @@ io.on('connection', (client: socketio.Socket) => {
     client.broadcast.emit('add-cart-item-ack',
       {
         msg: `${data.name} quantity decremented by 1`,
-        id: data._id
+        data
       });
   });
 
@@ -24,7 +24,7 @@ io.on('connection', (client: socketio.Socket) => {
     client.broadcast.emit('remove-cart-item-ack',
       {
         msg: `${data.name} quantity incremented by 1`,
-        id: data._id
+        data
       });
   });
 })

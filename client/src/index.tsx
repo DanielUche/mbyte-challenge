@@ -6,8 +6,8 @@ import App from './App';
 import store from './store';
 import 'semantic-ui-css/semantic.min.css';
 
-
 const render = () => {
+
   ReactDOM.render(
     <Provider store={store}>
       <React.StrictMode>
@@ -17,6 +17,8 @@ const render = () => {
     document.getElementById("root")
   );
 }
+
+
 
 render();
 

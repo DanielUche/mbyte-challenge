@@ -54,11 +54,11 @@ const ProductList: React.FC<Props> = (props) => {
     }));
   };
 
-  useEffect(() => {
-    webSocket.on("add-cart-item-ack", (data: IAcknowledgementResponse) => {
+  useEffect(() => { 
+    webSocket.on("add-cart-item-ack", (res: IAcknowledgementResponse) => {
       setAckModal(!openAckModal);
-      setAckData(data.msg);
-      dispatch(updateCartOnAcknolodgement(data));
+      setAckData(res.msg);
+      dispatch(updateCartOnAcknolodgement(res));
     });
     webSocket.on("remove-cart-item-ack", (data: IAcknowledgementResponse) => {
       setAckModal(!openAckModal);

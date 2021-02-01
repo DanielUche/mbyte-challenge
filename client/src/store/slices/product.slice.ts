@@ -13,6 +13,7 @@ interface InitialState {
   selectedProduct?: IProduct
   error?: string
   cart: ICartItem
+  openAckModal: boolean
 };
 
 const initialState: InitialState = {
@@ -20,7 +21,8 @@ const initialState: InitialState = {
   isCartLoading: false,
   products: [],
   selectedProduct: undefined,
-  cart: {}
+  cart: {},
+  openAckModal: false
 };
 
 const isLoading = (state: InitialState) => {
@@ -72,18 +74,18 @@ const productsSlice = createSlice({
       state.error = '';
       webSocket.emit('add-cart-item', selectedProduct);
     },
-    refreshCartOnAdd(state, action: PayloadAction<string>) {
+    refreshCartOnAdd(state, action: PayloadAction<IProduct>) {
       const { payload } = action;
       const { products } = state;
-      const productIndex = products.findIndex((product) => product._id === payload);
-      products[productIndex].quantity--;
+      const productIndex = products.findIndex((product) => product._id === payload._id);
+      products[productIndex].quantity = payload.quantity;
       state.products = [...products];
     },
-    refreshCartOnRemove(state, action: PayloadAction<string>) {
+    refreshCartOnRemove(state, action: PayloadAction<IProduct>) {
       const { payload } = action;
       const { products } = state;
-      const productIndex = products.findIndex((product) => product._id === payload);
-      products[productIndex].quantity++;
+      const productIndex = products.findIndex((product) => product._id === payload._id);
+      products[productIndex].quantity = payload.quantity;
       state.products = [...products];
     },
     removeItemFromCart(state, action: PayloadAction<string>) {
@@ -152,15 +154,16 @@ export const removeCartItemFromStore = (cart: string): AppThunk => async (dispat
 
 export const updateCartOnAcknolodgement = (data: IAcknowledgementResponse): AppThunk => async (dispatch: AppDispatch) => {
   try {
-    dispatch(productsSlice.actions.refreshCartOnAdd(data.id));
+    dispatch(productsSlice.actions.refreshCartOnAdd(data.data));
   } catch (err) {
+    console.log(err)
     dispatch(getErrorLoading(err.response.data));
   }
 }
 
 export const updateCartOnRemove = (data: IAcknowledgementResponse): AppThunk => async (dispatch: AppDispatch) => {
   try {
-    dispatch(productsSlice.actions.refreshCartOnRemove(data.id));
+    dispatch(productsSlice.actions.refreshCartOnRemove(data.data));
   } catch (err) {
     dispatch(getErrorLoading(err.response.data));
   }

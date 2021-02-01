@@ -15,5 +15,10 @@ export interface ICartItem {
 
 export interface IAcknowledgementResponse {
   msg: string;
-  id: string
+  data: IProduct
+}
+
+export interface IStoreRefreshPaylaod {
+  id: string;
+  quantity: number;
 }
