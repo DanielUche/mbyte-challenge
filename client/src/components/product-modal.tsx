@@ -72,7 +72,7 @@ const ProductModal: React.FC<IModal> = (props) => {
                   <List.Item>
                     <Button
                       disabled={
-                        (!isCartLoading && Object.keys(cart).length === 0) ||
+                        (!isCartLoading && selectedProduct && !cart[selectedProduct._id]) ||
                         isCartLoading
                       }
                       basic
